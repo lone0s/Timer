@@ -3,19 +3,21 @@
 
 
 #include <ctime>
-#include <stdio.h>
+#include <cstdio>
 
 class Chrono {
-public:
+private:
     double secondsPassed;
     clock_t clock;
     bool clockIsRunning;
 
+public:
     Chrono();
     void start();
     void end();
-    void calculateTimePassed(const clock_t &start, const clock_t &end);
     std::string howMuchTimePassed() const;
+private:
+    void calculateTimePassed(const clock_t &start, const clock_t &end);
 };
 
 

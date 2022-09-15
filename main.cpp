@@ -1,36 +1,89 @@
 #include <iostream>
+#include <cstring>
 #include "chrono.h"
 #include "../Logger/Logger.h"
 
-
-int main() {
-    Chrono chrono = Chrono();
-    for (int h = 0 ; h < 3 ; h++)
-    {
-        for (int i = 0; i < 10; i++) {
-            double a = 1;
-            int num1 = 0;
-            int num2 = 1;
-            int num_temp;
-            int num_next = 1;
-            int n = 1000;
-            chrono.start();
-//    std::cin >> n;
-            if (n >= 1)
-                std::cout << 0 << " ";
-            if (n >= 2)
-                std::cout << 1 << " ";
-            for (int i = 0; i < n - 2; i++) {
-                num_next = num1 + num2;
-                std::cout << num_next << " ";
-                num1 = num2;
-                num2 = num_next;
+void fibonnaci(int iterations) {
+    int n = 0;
+    long last1, last2, mem;
+    if(iterations >= 0) {
+        while (n <= iterations) {
+            if (n == 0) {
+                last2 = 0;
+                std::cout << "[ " << last2 << " ] ";
+                n++;
+            } else if (n == 1) {
+                last1 = 1;
+                std::cout << "[ " << last1 << " ] ";
+                n++;
+            } else {
+                mem = last1;
+                last1 = last1 + last2;
+                last2 = mem;
+                n++;
+                std::cout << "[ " << last1 << " ] ";
             }
-            std::cout << std::endl;
-            chrono.end();
-            Logger logger = Logger("cptLog", 0, false, "");
-            logger.log("V" + std::to_string(h) + "  " "iteration: " + std::to_string(i) + " - " + chrono.howMuchTimePassed(), 2);
         }
+        std::cout << std::endl;
     }
-    return 0;
+}
+
+void factorial(int n) {
+    int iter = 1;
+    long res = 1;
+    if (n >= 0) {
+        if (n == 0) {
+            res = 0;
+            std::cout << "[ " << res << " ] ";
+        }
+        else {
+            while (iter <= n) {
+                res *= iter;
+                std::cout << "[ " << res << " ] ";
+                iter++;
+            }
+        }
+        std::cout << std::endl;
+    }
+}
+
+bool isFuncName(const std::string &name) {
+    return (name == "fibonnaci" || name == "factorial");
+}
+
+
+int main(int argc,char* argv[]) {
+    /*
+     * Arguments necessaires : - nom de la fonction voulue |fibo |fact
+     *                         - nombre d'itérations voulue
+     *                         - eventuellement si on veut l'horodatage ? [Facultatif]
+     */
+    if (argc == 3) {
+        if (isFuncName(argv[1])) {
+            long iter = std::strtol(argv[2], nullptr,10); //error: returns LONG_MAX//LONG_MIN//ERANGE
+            Logger logger = Logger(argv[1],0,true,R"(E:\ohno\Documents\C++\TPs\TP1\Chrono\runtime.txt)");
+            Chrono timer = Chrono();
+
+            if (iter) {
+                if (std::strcmp(argv[1],"fibonnaci") == 0) {
+                    timer.start();
+                    fibonnaci(iter);
+                    timer.end();
+                    std::cout << timer.howMuchTimePassed() << std::endl;
+                    logger.log(timer.howMuchTimePassed(), 0);
+                }
+                else {
+                    timer.start();
+                    factorial(iter);
+                    timer.end();
+                    std::cout << timer.howMuchTimePassed() << std::endl;
+                    logger.log(timer.howMuchTimePassed(), 0);
+                }
+            } else
+                std::cerr << "2nd argument for the n-value isn't a decimal value" << std::endl;
+        } else
+            std::cerr << "Program needs 2 arguments: <function name> <n-value>"
+                         "\n<Func names> : [fibonnaci] [factorial]"
+                         "\n<n-value> : only integer value" << std::endl;
+    }
 }
